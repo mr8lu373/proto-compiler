@@ -1,7 +1,7 @@
 # -------------- Create pulbic-api.ts from the commonjs output of the proto compilation step
 # to pass a single file to webpack as an entry point
 
-#Root directory of the compilation ( -> public api file in this directory + proto commonjs stubs are in this/api )
+#Root directory of the compilation ( -> public api file in this directory + proto commonjs stubs are in this )
 TEMP_SRC_DIRECTORY=$1
 
 DEFAULT_FILES_DIR=default-lib-files
@@ -18,8 +18,23 @@ if [ ! -f $PUBLIC_API_FILE ]; then
     cd $TEMP_SRC_DIRECTORY
 
     #ES6 Style exports
-    export PREFIX="export * from '"
+    export PREFIX="import * as "
+    export FROM=" from '"
     export POSTFIX="';"
-
-    find api -iname "*$FILE_EXT" -exec bash -c 'printf "$PREFIX./%s$POSTFIX\n" "${@%.*}"' _ {} + >> $PUBLIC_API_FILE
+    export EXPORT="export default {"    
+    #find . -iname "*$FILE_EXT" -exec bash -c 'printf "$PREFIX./%s$POSTFIX\n" "${@%.*}"' _ {} + >> $public-api$FILE_EXT
+    #find ./lib -iname "*.pb*$FILE_EXT" -exec bash -c 'printf "$PREFIX%s$POSTFIX\n" "${@%.*}"' _ {} + >> public-api$FILE_EXT
+     for full_name in $(find ./lib -iname "*.pb*$FILE_EXT"); 
+     do 
+        xpath=${full_name%/*}; 
+        xbase=${full_name##*/};         
+        xpref=${xbase%.*}; 
+        EXPORT_NAME=$(sed 's/\./_/g' <<<$xpref)
+        FULL_NAME_NO_TS=$(sed 's/\.ts//g' <<<$full_name)
+        echo "$PREFIX$EXPORT_NAME$FROM$FULL_NAME_NO_TS$POSTFIX" >> public-api$FILE_EXT; 
+        EXPORT="$EXPORT...$EXPORT_NAME,"
+    done
+    EXPORT="$EXPORT}"
+    echo "">>public-api$FILE_EXT
+    echo $EXPORT>>public-api$FILE_EXT
 fi

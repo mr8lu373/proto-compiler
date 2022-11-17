@@ -5,7 +5,7 @@
     "analytics": false
     },
     "projects": {
-      "ondewo-proto-client-angular": {
+      "proto-client-angular": {
         "projectType": "library",
         "root": "./src",
         "sourceRoot": "./src",

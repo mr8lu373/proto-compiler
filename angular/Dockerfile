@@ -14,9 +14,21 @@ WORKDIR /image-data
 ADD image-data /image-data
 
 # --------------- Install npm modules required for compilation with angular
-RUN npm run reinstall
+RUN npm i -g @angular/cli@^14.0.0 @angular/compiler-cli@^14.0.0
+
+RUN npm i -g @ngx-grpc/common @ngx-grpc/core @ngx-grpc/grpc-web-client @ngx-grpc/well-known-types grpc-web
+RUN npm i -g @ngx-grpc/protoc-gen-ng @types/google-protobuf
+#RUN ng new workspace --no-create-application
+
+
+#RUN npm run reinstall
+
+# mount:
+# workspace of ng project = input-volume
+# dest folder src of library = output-volume
+# root folder of protos = proto-volume
 
 # --------------- Entrypoint when the docker container is executed
-ENTRYPOINT ["bash","compile-proto-2-angular.sh"]
+ENTRYPOINT ["bash"]
 
 # -----------------------------------------------------------------------------------------------------
